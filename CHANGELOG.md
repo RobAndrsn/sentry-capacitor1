@@ -1,5 +1,31 @@
 # Changelog
 
+## Unreleased
+
+### Dependencies
+
+- Bump Sentry JavaScript SDK to `7.15.0` ([#244](https://github.com/getsentry/sentry-capacitor/pull/244))
+  - [changelog](https://github.com/getsentry/sentry-javascript/releases/tag/7.15.0)
+  - [diff](https://github.com/getsentry/sentry-javascript/compare/7.13.0...7.15.0)
+- Bump Sentry iOS SDK to `7.30.2` ([#259](https://github.com/getsentry/sentry-capacitor/pull/259))
+  - [changelog](https://github.com/getsentry/sentry-cocoa/releases/tag/7.30.2)
+  - [diff](https://github.com/getsentry/sentry-cocoa/compare/7.23.0...7.30.2)
+- Bump Sentry Android SDK to `6.4.3` ([#230](https://github.com/getsentry/sentry-capacitor/pull/230))
+  - [changelog](https://github.com/getsentry/sentry-java/releases/tag/6.4.3)
+  - [diff](https://github.com/getsentry/sentry-java/compare/5.7.0...6.4.3)
+
+## 0.10.1
+
+### Fixes
+
+- Fallback to iOS minimum version 13.0 if Capacitor package was not found ([#225](https://github.com/getsentry/sentry-capacitor/pull/225))
+
+### Dependencies
+
+- Bump Sentry JavaScript SDK to `7.13.0` ([#222](https://github.com/getsentry/sentry-capacitor/pull/222))
+  - [changelog](https://github.com/getsentry/sentry-javascript/releases/tag/7.13.0)
+  - [diff](https://github.com/getsentry/sentry-javascript/compare/7.12.1...7.13.0)
+
 ## 0.10.0
 
 ### Features

@@ -12,7 +12,7 @@ env:
 
   CACHED_BUILD_PATHS: |
     ${{ github.workspace }}/dist
-    
+
   BUILD_CACHE_KEY: ${{ github.sha }}
 
 jobs:
@@ -22,16 +22,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out current commit (${{ github.sha }})
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         # we use a hash of yarn.lock as our cache key, because if it hasn't changed, our dependencies haven't changed,
         # so no need to reinstall them
       - name: Compute dependency cache key
         id: compute_lockfile_hash
-        run: echo "::set-output name=hash::${{ hashFiles('yarn.lock') }}"
+        run: echo "hash=${{ hashFiles('yarn.lock') }}" >> "$GITHUB_OUTPUT"
       - name: Check dependency cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         id: cache_dependencies
         with:
           path: ${{ env.CACHED_DEPENDENCY_PATHS }}
@@ -50,22 +50,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out current commit (${{ github.sha }})
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
       - name: Check dependency cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: ${{ env.CACHED_DEPENDENCY_PATHS }}
           key: ${{ needs.job_build.outputs.dependency_cache_key }}
       - name: Check build cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: ${{ env.CACHED_BUILD_PATHS }}
           key: ${{ env.BUILD_CACHE_KEY }}
       - name: Run tests
         run: yarn test
-        
+
   job_build:
     name: Build
     needs: job_install_deps
@@ -73,16 +73,16 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Check out current commit (${{ github.sha }})
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
       - name: Check dependency cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: ${{ env.CACHED_DEPENDENCY_PATHS }}
           key: ${{ needs.job_install_deps.outputs.dependency_cache_key }}
       - name: Check build cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         id: cache_built_packages
         with:
           path: ${{ env.CACHED_BUILD_PATHS }}
@@ -94,6 +94,10 @@ jobs:
         # this file) to a constant and skip rebuilding all of the packages each time CI runs.
         if: steps.cache_built_packages.outputs.cache-hit == ''
         run: yarn build
+        # yarn.lock cannot be dirty when releasing a new version.
+      - name: Check if yarn.lock is dirty
+        if: steps.cache_built_packages.outputs.cache-hit == ''
+        run: yarn install --frozen-lockfile
     outputs:
       # this needs to be passed on, because the `needs` context only looks at direct ancestors (so steps which depend on
       # `job_build` can't see `job_install_deps` and what it returned)
@@ -105,23 +109,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out current commit (${{ github.sha }})
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
       - name: Check dependency cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: ${{ env.CACHED_DEPENDENCY_PATHS }}
           key: ${{ needs.job_build.outputs.dependency_cache_key }}
       - name: Check build cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3.0.11
         with:
           path: ${{ env.CACHED_BUILD_PATHS }}
           key: ${{ env.BUILD_CACHE_KEY }}
       - name: Pack
         run: yarn pack
       - name: Archive artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3.1.1
         with:
           name: ${{ github.sha }}
           path: |
